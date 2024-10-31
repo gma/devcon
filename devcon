@@ -25,7 +25,10 @@ e.g.
 
     devcon exec --blah => devcontainer exec [devcon's own options] --blah
 
-devcon also provides a down command (to stop and remove running containers).
+devcon also provides two extra commands:
+
+    devcon down    # uses docker compose to stop all containers
+    devclon login  # equivalent to 'devcon exec \$SHELL'
 
 It also supports:
 
@@ -119,6 +122,9 @@ case "$COMMAND" in
         ;;
     exec)
         devcontainer "$COMMAND" "${EXEC_OPTIONS[@]}" "$@"
+        ;;
+    login)
+        devcontainer exec "${EXEC_OPTIONS[@]}" "$SHELL" "$@"
         ;;
     up)
         devcontainer "$COMMAND" "${UP_OPTIONS[@]}" "$@"

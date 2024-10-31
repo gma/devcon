@@ -16,7 +16,7 @@ type this:
 
 ```sh
 devcon up
-devcon exec nvim
+devcon exec /bin/bash  # also aliased to `devcon login`
 devcon down
 ```
 
