@@ -65,7 +65,7 @@ COMMAND="$1"
 shift
 [ -z "$COMMAND" ] && usage
 
-[ -f .devcontainer/devcontainer.json ] || die "devcontainer not found"
+[ -f .devcontainer/devcontainer.json ] || die "devcontainer.json not found"
 
 [ -n "$DEBUG" ] && set -x
 
