@@ -33,7 +33,7 @@ devcon also provides two extra commands:
 It also supports:
 
 - setting up SSH agent forwarding within the container
-- making ~/.gitconfig available within the container
+- making ~/.gitconfig and ~/.gitignore available within the container
 - installing your dotfiles (set the DEVCON_DOTFILES var to your repo URL)
 
 Run 'devcon help' to see a list of the available devcontainer subcommands.
@@ -92,8 +92,17 @@ fi
 # Choose options to pass to `devcontainer up`
 UP_OPTIONS=(
     "${BUILD_OPTIONS[@]}"
-    --mount "type=bind,source=$HOME/.gitconfig,target=/home/$DEVCON_USER/.gitconfig"
 )
+if [ -e ~/.gitconfig ]; then
+    UP_OPTIONS+=(
+        --mount "type=bind,source=$HOME/.gitconfig,target=/home/$DEVCON_USER/.gitconfig"
+    )
+fi
+if [ -e ~/.gitignore ]; then
+    UP_OPTIONS+=(
+        --mount "type=bind,source=$HOME/.gitignore,target=/home/$DEVCON_USER/.gitignore"
+    )
+fi
 if forwarding_ssh_agent; then
     UP_OPTIONS+=(
         --mount "type=bind,source=$HOME/.ssh,target=/home/$DEVCON_USER/.ssh"
