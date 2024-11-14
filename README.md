@@ -70,6 +70,36 @@ Environment Variables
 You can control the behaviour of `devcon` by setting a few environment
 variables.
 
+### DEVCON_APT_PACKAGES
+
+Default: `file`
+
+Set this variable to a comma-separated list of Debian packages that you'd like
+to be installed within your container.
+
+They'll be pulled in at build time via the [apt-packages] feature:
+
+```json
+{
+    "ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
+        "packages": "..."
+    }
+}
+```
+
+Whatever you set `DEVCON_APT_PACKAGES` to will replace the three dots in the
+above JSON.
+
+For example, I have this in my `.bashrc` file:
+
+```sh
+export DEVCON_APT_PACKAGES="exuberant-ctags file shellcheck"
+```
+
+**NOTE:** If you set a value for `DEVCON_FEATURES` then `DEVCON_APT_PACKAGES`
+will be ignored. You can, however, still include the config for the
+[apt-packages] feature in your `DEVCON_FEATURES` variable.
+
 ### DEVCON_DOTFILES
 
 Default: Unset
@@ -81,16 +111,16 @@ devcontainer my personal settings are installed within the container.
 
 ### DEVCON_FEATURES
 
-Default: `'{ "ghcr.io/duduribeiro/devcontainer-features/neovim:1": {} }'`
+Default: `"ghcr.io/duduribeiro/devcontainer-features/neovim:1": {}`
 
-Can be set to a snippet of JSON that defines the [devcontainer feature] that
-you'd like to be used when building the container.
+Can be set to a snippet of JSON that specifies one or [devcontainer features]
+that you'd like to be used when building the container.
 
-It defaults to including a feature that will compile Neovim from source.
+By default it's set to a single feature that will compile Neovim from source.
 
-Set it to the empty string if you'd like to disable the installation of Neovim,
-but don't have any other features that you'd like to include in your
-containers.
+**NOTE:** If you set this, and you're also using `DEVCON_APT_PACKAGES`, you'll
+need to manually include the [apt-packages] feature in `DEVCON_FEATURES`, as
+`DEVCON_APT_PACKAGES` will be ignored.
 
 ### DEVCON_USER
 
@@ -101,3 +131,5 @@ used to determine the user's home directory inside the container.
 
 [devcontainers/cli]: https://github.com/devcontainers/cli
 [devcontainer feature]: https://containers.dev/features
+[devcontainer features]: https://containers.dev/features
+[apt-packages]: https://github.com/rocker-org/devcontainer-features/tree/main/src/apt-packages

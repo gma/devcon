@@ -69,15 +69,25 @@ shift
 
 [ -n "$DEBUG" ] && set -x
 
+DEVCON_APT_PACKAGES="${DEVCON_APT_PACKAGES:-file}"
 DEVCON_USER="${DEVCON_USER:-vscode}"
 SSH_AGENT_ENV_OPTIONS=(--remote-env SSH_AUTH_SOCK=/tmp/.ssh-auth.sock)
 
 # Choose options to pass to `devcontainer build`
+#
 if [ -z "$DEVCON_FEATURES" ]; then
-    DEVCON_FEATURES='{ "ghcr.io/duduribeiro/devcontainer-features/neovim:1": {} }'
+    DEVCON_FEATURES='"ghcr.io/duduribeiro/devcontainer-features/neovim:1": {}'
 fi
+read -r -d '' ADDITIONAL_FEATURES << END_OF_JSON
+{
+    ${DEVCON_FEATURES},
+    "ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
+        "packages": "${DEVCON_APT_PACKAGES}"
+    }
+}
+END_OF_JSON
 FEATURES=(
-    --additional-features "$DEVCON_FEATURES"
+    --additional-features "$ADDITIONAL_FEATURES"
 )
 
 BUILD_OPTIONS=(--workspace-folder .)
