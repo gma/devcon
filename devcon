@@ -69,7 +69,7 @@ shift
 
 [ -n "$DEBUG" ] && set -x
 
-DEVCON_APT_PACKAGES="${DEVCON_APT_PACKAGES:-file}"
+DEVCON_APT_PACKAGES="${DEVCON_APT_PACKAGES:-bash-completion,file}"
 DEVCON_USER="${DEVCON_USER:-vscode}"
 SSH_AGENT_ENV_OPTIONS=(--remote-env SSH_AUTH_SOCK=/tmp/.ssh-auth.sock)
 
@@ -94,7 +94,11 @@ BUILD_OPTIONS=(--workspace-folder .)
 BUILD_OPTIONS+=("${FEATURES[@]}")
 
 # Choose options to pass to `devcontainer exec`
-EXEC_OPTIONS=(--workspace-folder .)
+EXEC_OPTIONS=(
+    --remote-env COLUMNS="$COLUMNS"
+    --remote-env LINES="$LINES"
+    --workspace-folder .
+)
 if forwarding_ssh_agent; then
     EXEC_OPTIONS+=("${SSH_AGENT_ENV_OPTIONS[@]}")
 fi

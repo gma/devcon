@@ -72,7 +72,7 @@ variables.
 
 ### DEVCON_APT_PACKAGES
 
-Default: `file`
+Default: `bash-completion,file`
 
 Set this variable to a comma-separated list of Debian packages that you'd like
 to be installed within your container.
@@ -93,7 +93,7 @@ above JSON.
 For example, I have this in my `.bashrc` file:
 
 ```sh
-export DEVCON_APT_PACKAGES="exuberant-ctags file shellcheck"
+export DEVCON_APT_PACKAGES="bash-completion exuberant-ctags file shellcheck"
 ```
 
 **NOTE:** If you set a value for `DEVCON_FEATURES` then `DEVCON_APT_PACKAGES`
