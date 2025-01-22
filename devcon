@@ -28,7 +28,7 @@ e.g.
 devcon also provides two extra commands:
 
     devcon down    # uses docker compose to stop all containers
-    devclon login  # equivalent to 'devcon exec \$SHELL'
+    devcon login   # equivalent to 'devcon exec \$SHELL'
 
 It also supports:
 
