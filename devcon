@@ -14,10 +14,6 @@ for them (i.e. tools that aren't VS Code).
 It sets some default arguments for you when calling the devcontainer build, up,
 down, and exec subcommands.
 
-By default, Neovim will be included during the build, via a feature that
-compiles Neovim from source. See the note on setting DEVCON_FEATURES in the
-README if you'd like to disable that.
-
 Any arguments that you pass to a devcon subcommand are passed straight through
 to the equivalent devcontainer subcommand.
 
@@ -75,12 +71,12 @@ SSH_AGENT_ENV_OPTIONS=(--remote-env SSH_AUTH_SOCK=/tmp/.ssh-auth.sock)
 
 # Choose options to pass to `devcontainer build`
 #
-if [ -z "$DEVCON_FEATURES" ]; then
-    DEVCON_FEATURES='"ghcr.io/duduribeiro/devcontainer-features/neovim:1": {}'
+if [ -n "$DEVCON_FEATURES" ]; then
+    DEVCON_FEATURES="${DEVCON_FEATURES},"
 fi
 read -r -d '' ADDITIONAL_FEATURES << END_OF_JSON
 {
-    ${DEVCON_FEATURES},
+    ${DEVCON_FEATURES}
     "ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
         "packages": "${DEVCON_APT_PACKAGES}"
     }

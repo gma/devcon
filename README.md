@@ -111,12 +111,10 @@ devcontainer my personal settings are installed within the container.
 
 ### DEVCON_FEATURES
 
-Default: `"ghcr.io/duduribeiro/devcontainer-features/neovim:1": {}`
+Default: Unset
 
 Can be set to a snippet of JSON that specifies one or [devcontainer features]
 that you'd like to be used when building the container.
-
-By default it's set to a single feature that will compile Neovim from source.
 
 **NOTE:** If you set this, and you're also using `DEVCON_APT_PACKAGES`, you'll
 need to manually include the [apt-packages] feature in `DEVCON_FEATURES`, as
