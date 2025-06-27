@@ -116,9 +116,12 @@ Default: Unset
 Can be set to a snippet of JSON that specifies one or [devcontainer features]
 that you'd like to be used when building the container.
 
-**NOTE:** If you set this, and you're also using `DEVCON_APT_PACKAGES`, you'll
-need to manually include the [apt-packages] feature in `DEVCON_FEATURES`, as
-`DEVCON_APT_PACKAGES` will be ignored.
+For example, to install Neovim from source while building the image, you could
+do this before running `devcon up`:
+
+```sh
+export DEVCON_FEATURES='"ghcr.io/duduribeiro/devcontainer-features/neovim:1": {}'
+```
 
 ### DEVCON_USER
 
