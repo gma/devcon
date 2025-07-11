@@ -94,10 +94,6 @@ For example, I have this in my `.bashrc` file:
 export DEVCON_APT_PACKAGES="bash-completion exuberant-ctags file shellcheck"
 ```
 
-**NOTE:** If you set a value for `DEVCON_FEATURES` then `DEVCON_APT_PACKAGES`
-will be ignored. You can, however, still include the config for the
-[apt-packages] feature in your `DEVCON_FEATURES` variable.
-
 ### DEVCON_DOTFILES
 
 Default: Unset
