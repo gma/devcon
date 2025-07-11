@@ -47,8 +47,6 @@ These extra options will:
   can login to stuff with your SSH keys)
 - Install your dotfiles within the container (if you set `DEVCON_DOTFILES` —
   see below)
-- Install a recent version of Neovim from source, inside the container (you can
-  override this behaviour if you like — see below)
 
 In addition, it adds two new commands:
 
