@@ -61,8 +61,6 @@ COMMAND="$1"
 shift
 [ -z "$COMMAND" ] && usage
 
-[ -f .devcontainer/devcontainer.json ] || die "devcontainer.json not found"
-
 [ -n "$DEBUG" ] && set -x
 
 DEVCON_APT_PACKAGES="${DEVCON_APT_PACKAGES:-bash-completion,file}"
