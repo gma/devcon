@@ -18,4 +18,7 @@ fi
 
 
 PATH_TO_DIR="$(cd "$(dirname "$0")"; pwd)"
-ln -sf "$PATH_TO_DIR/devcon" $DEST
+
+for EXECUTABLE in devcon devcon-proxy; do
+    ln -sf "$PATH_TO_DIR/$EXECUTABLE" $DEST
+done

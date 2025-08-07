@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+
+## Functions
+
+usage()
+{
+    local command="$(basename "$0" | sed 's/-/ /')"
+    cat <<EOF
+Usage: $command <up|down>
+
+    $command up    # starts proxy for each port in forwardPorts
+    $command down  # stops all proxy containers
+
+EOF
+
+    exit 1
+}
+
+
+forwarded_ports()
+{
+    echo 3000
+    echo 4000
+    echo postgres:5432
+}
+
+
+start_container()
+{
+    echo TODO: start_container "$@"
+}
+
+
+stop_container()
+{
+    echo TODO: stop_container "$@"
+}
+
+
+## Main program
+
+COMMAND="$1"
+shift
+[ -z "$COMMAND" ] && usage
+
+set -euo pipefail
+
+case "$COMMAND" in
+    down)
+        for HOST_AND_PORT in $(forwarded_ports); do
+            stop_container $HOST_AND_PORT
+        done
+        ;;
+    up)
+        for HOST_AND_PORT in $(forwarded_ports); do
+            start_container $HOST_AND_PORT
+        done
+        ;;
+    *)
+        usage
+        ;;
+esac
