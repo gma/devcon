@@ -1,0 +1,135 @@
+#!/usr/bin/env bash
+
+## Variables
+
+DEVCONTAINER_CONFIG="${DEVCONTAINER_CONFIG:=.devcontainer/devcontainer.json}"
+
+
+## Functions
+
+usage()
+{
+    local command
+    command="$(basename "$0" | sed 's/-/ /')"
+    cat <<EOF
+Usage: $command <up|down>
+
+    $command up    # starts proxy for each port in forwardPorts
+    $command down  # stops all proxy containers
+
+EOF
+
+    exit 1
+}
+
+
+info()
+{
+    local message
+    message="$1"
+
+    DEFAULT="\033[0m"
+    BLUE="0;34m"
+    HIGHLIGHT="\033[$BLUE"
+
+    echo -e "${HIGHLIGHT}## $(basename "$0"): $message${DEFAULT}"
+}
+
+
+read_config_property()
+{
+    local property
+    property="$1"
+    grep -E "$property.:" "$DEVCONTAINER_CONFIG" | \
+        sed 's/.*: //; s/"//g; s/,$//'
+}
+
+
+read_ports_from_config()
+{
+    IFS=", " read -r -a PORTS <<< \
+        "$(grep -E 'forwardPorts.:' "$DEVCONTAINER_CONFIG" | \
+            sed 's/.*\[//; s/\].*//; s/"//g; s/,$//')"
+
+    # For ports that don't include a service we add devcontainer's service name
+
+    local devcontainer_service
+    devcontainer_service="$(read_config_property service)"
+
+    local i
+    for i in "${!PORTS[@]}"; do
+        if [[ ! ${PORTS[i]} =~ : ]]; then
+            PORTS[i]="$devcontainer_service:${PORTS[i]}"
+        fi
+    done
+}
+
+
+start_proxy()
+{
+    local service port network container
+    service="$1" port="$2" network="$3" container="$4"
+    info "forwarding $service:$port to 127.0.0.1:$port"
+    docker run --name "${container}-proxy-${port}" \
+        --network "$network" \
+        -p "127.0.0.1:$port:$port" \
+        --restart=unless-stopped \
+        --detach \
+        alpine/socat \
+        "tcp-listen:${port},fork,reuseaddr" "tcp-connect:${container}:${port}"
+}
+
+
+stop_proxy()
+{
+    local service port network container
+    service="$1" port="$2" network="$3" container="$4"
+    info "closing port 127.0.0.1:$port"
+    docker stop "${container}-proxy-${port}" || true
+    docker rm --force "${container}-proxy-${port}" &>/dev/null
+}
+
+
+for_each_port()
+{
+    local func
+    func="$1"
+    shift
+
+    local container network port project service
+
+    project="$(read_config_property name)"
+    network="${project}_default"
+    read_ports_from_config
+    for port in "${PORTS[@]}"; do
+        service=${port%:*}  # e.g. leading part of app:8080
+        port=${port#*:}     #      trailing part of app:8080
+        container="$project-$service-1"
+        $func "$service" "$port" "$network" "$container"
+    done
+}
+
+
+## Main program
+
+[ -n "$DEBUG" ] && set -x
+
+COMMAND="$1"
+shift
+[ -z "$COMMAND" ] && usage
+
+set -euo pipefail
+
+declare -a PORTS
+
+case "$COMMAND" in
+    down)
+        for_each_port "stop_proxy"
+        ;;
+    up)
+        for_each_port "start_proxy"
+        ;;
+    *)
+        usage
+        ;;
+esac

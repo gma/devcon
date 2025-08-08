@@ -21,10 +21,15 @@ e.g.
 
     devcon exec --blah => devcontainer exec [devcon's own options] --blah
 
-devcon also provides two extra commands:
+devcon also provides these extra commands:
 
-    devcon down    # uses docker compose to stop all containers
-    devcon login   # equivalent to 'devcon exec \$SHELL'
+    devcon down             # uses docker compose to stop all containers
+    devcon login            # equivalent to 'devcon exec \$SHELL'
+    devcon proxy <up|down>  # make container ports available on host
+
+'devcon proxy' reads the 'forwardPorts' setting in 'devcontainer.json' and
+makes each of those ports available on 'localhost'. Note that it's run
+automatically by 'devcon up' and 'devcon down'.
 
 It also supports:
 
@@ -136,6 +141,7 @@ case "$COMMAND" in
         ;;
     down)
         docker compose -f .devcontainer/compose.yaml down "$@"
+        devcon-proxy down
         ;;
     exec)
         devcontainer "$COMMAND" "${EXEC_OPTIONS[@]}" "$@"
@@ -143,8 +149,12 @@ case "$COMMAND" in
     login)
         devcontainer exec "${EXEC_OPTIONS[@]}" "$SHELL" "$@"
         ;;
+    proxy)
+        devcon-proxy "$@"
+        ;;
     up)
         devcontainer "$COMMAND" "${UP_OPTIONS[@]}" "$@"
+        devcon-proxy up
         ;;
     "")
         usage

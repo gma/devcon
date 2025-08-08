@@ -29,8 +29,11 @@ type:
 devcon up
 ```
 
-In addition to setting these common switches, you can pass other options to
-`devcon` and it will pass them through to `devcontainer`.
+It also sets up proxies to make your containers' ports available on your host
+computer, as specified by the `forwardPorts` setting in `devcontainer.json`. At
+the time of writing, `devcontainer` [isn't able] to handle this itself.
+
+[isn't able]: https://github.com/devcontainers/cli/issues/22
 
 ## Supported commands
 
@@ -52,10 +55,11 @@ command will be passed through to `devcontainer`.
 
 `devcon` also provides three new commands:
 
-- `devcon down` will stop your containers, by running `docker compose down`
-- `devcon login` will run `docker exec` to launch a shell inside the container
-- `devcon proxy` lets you start/stop the proxies that make your containers'
-  ports available on your Docker host
+- `devcon down` stops your containers, by running `docker compose down`
+- `devcon login` uses `docker exec` to launch a shell inside the container
+- `devcon proxy <up|down>` starts or stops containers that proxy ports listed
+  in `forwardPorts` to your host machine (run automatically by `devcon up` and
+  `devcon down`)
 
 tl;dr — to launch, use, and then shut down a devcontainer, you can just type:
 
