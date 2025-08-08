@@ -4,7 +4,8 @@
 
 usage()
 {
-    local command="$(basename "$0" | sed 's/-/ /')"
+    local command
+    command="$(basename "$0" | sed 's/-/ /')"
     cat <<EOF
 Usage: $command <up|down>
 
