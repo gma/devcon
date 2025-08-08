@@ -29,7 +29,16 @@ read_ports_from_config()
 {
     IFS=", " read -r -a PORTS <<< \
         "$(grep -E 'forwardPorts.:' "$DEVCONTAINER_CONFIG" | \
-            sed 's/.*\[//; s/\].*//; s/"//g')"
+            sed 's/.*\[//; s/\].*//; s/"//g; s/,$//')"
+}
+
+
+read_config_property()
+{
+    local property
+    property="$1"
+    grep -E "$property.:" "$DEVCONTAINER_CONFIG" | \
+        sed 's/.*: //; s/"//g; s/,$//'
 }
 
 
@@ -61,8 +70,17 @@ case "$COMMAND" in
         ;;
     up)
         read_ports_from_config
+        PROJECT="$(read_config_property name)"
+        NETWORK="default_$PROJECT"
         for PORT in "${PORTS[@]}"; do
-            echo "port: $PORT"
+            if [[ $PORT == *:* ]]; then
+                SERVICE=${PORT%:*}
+                PORT=${PORT#*:}
+            else
+                SERVICE="$(read_config_property service)"
+            fi
+            CONTAINER="$PROJECT-$SERVICE-1"
+            echo "$CONTAINER on $NETWORK needs port $PORT"
         done
         ;;
     *)
