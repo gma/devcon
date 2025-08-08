@@ -136,6 +136,7 @@ case "$COMMAND" in
         ;;
     down)
         docker compose -f .devcontainer/compose.yaml down "$@"
+        devcon-proxy down
         ;;
     exec)
         devcontainer "$COMMAND" "${EXEC_OPTIONS[@]}" "$@"
@@ -145,6 +146,7 @@ case "$COMMAND" in
         ;;
     up)
         devcontainer "$COMMAND" "${UP_OPTIONS[@]}" "$@"
+        devcon-proxy up
         ;;
     "")
         usage
