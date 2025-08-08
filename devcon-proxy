@@ -25,11 +25,17 @@ EOF
 }
 
 
-read_ports_from_config()
+info()
 {
-    IFS=", " read -r -a PORTS <<< \
-        "$(grep -E 'forwardPorts.:' "$DEVCONTAINER_CONFIG" | \
-            sed 's/.*\[//; s/\].*//; s/"//g; s/,$//')"
+    local message
+    message="$1"
+
+    DEFAULT="\033[0m"
+    RED="0;31m"
+    BLUE="0;34m"
+    HIGHLIGHT="\033[$BLUE"
+
+    echo -e "${HIGHLIGHT}## $(basename $0): $message${DEFAULT}"
 }
 
 
@@ -42,16 +48,62 @@ read_config_property()
 }
 
 
+read_ports_from_config()
+{
+    IFS=", " read -r -a PORTS <<< \
+        "$(grep -E 'forwardPorts.:' "$DEVCONTAINER_CONFIG" | \
+            sed 's/.*\[//; s/\].*//; s/"//g; s/,$//')"
+
+    # Prefix ports that don't have a service with devcontainer's service name
+    local i
+    for i in "${!PORTS[@]}"; do
+        if [[ ! ${PORTS[i]} =~ : ]]; then
+            PORTS[i]="$(read_config_property service):${PORTS[i]}"
+        fi
+    done
+}
+
+
 start_proxy()
 {
-    local host_and_port="$1"
-    echo "$host_and_port"
+    local service port network container port
+    service="$1" port="$2" network="$3" container="$4"
+    info "Proxying $service:$port to 127.0.0.1:$port"
+    docker run --name "${container}-proxy-${port}" \
+        --network "$network" \
+        -p "127.0.0.1:$port:$port" \
+        --restart=unless-stopped \
+        --detach \
+        alpine/socat \
+        "tcp-listen:${port},fork,reuseaddr" "tcp-connect:${container}:${port}"
 }
 
 
 stop_proxy()
 {
-    echo TODO: stop_proxy "$@"
+    local service port container
+    service="$1" port="$2" container="$3"
+    info "Stopping proxy from $service:$port to 127.0.0.1:$port"
+    docker stop "${container}-proxy-${port}" || true
+    docker rm --force "${container}-proxy-${port}" || true
+}
+
+
+for_each_port()
+{
+    local command
+    command="$1"
+    shift
+
+    PROJECT="$(read_config_property name)"
+    NETWORK="${PROJECT}_default"
+    read_ports_from_config
+    for PORT in "${PORTS[@]}"; do
+        SERVICE=${PORT%:*}  # e.g. leading part of app:8080
+        PORT=${PORT#*:}     #      trailing part of app:8080
+        CONTAINER="$PROJECT-$SERVICE-1"
+        eval "$command" $@
+    done
 }
 
 
@@ -65,23 +117,10 @@ set -euo pipefail
 
 case "$COMMAND" in
     down)
-        read_ports_from_config
-        echo "${PORTS[@]}"
+        for_each_port "stop_proxy" "\$SERVICE \$PORT \$CONTAINER"
         ;;
     up)
-        read_ports_from_config
-        PROJECT="$(read_config_property name)"
-        NETWORK="default_$PROJECT"
-        for PORT in "${PORTS[@]}"; do
-            if [[ $PORT == *:* ]]; then
-                SERVICE=${PORT%:*}
-                PORT=${PORT#*:}
-            else
-                SERVICE="$(read_config_property service)"
-            fi
-            CONTAINER="$PROJECT-$SERVICE-1"
-            echo "$CONTAINER on $NETWORK needs port $PORT"
-        done
+        for_each_port "start_proxy" "\$SERVICE \$PORT \$NETWORK \$CONTAINER"
         ;;
     *)
         usage
