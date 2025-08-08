@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+## Variables
+
+DEVCONTAINER_CONFIG="${DEVCONTAINER_CONFIG:=.devcontainer/devcontainer.json}"
+
+declare -a PORTS
+
+
 ## Functions
 
 usage()
@@ -18,23 +25,24 @@ EOF
 }
 
 
-forwarded_ports()
+read_ports_from_config()
 {
-    echo 3000
-    echo 4000
-    echo postgres:5432
+    IFS=", " read -r -a PORTS <<< \
+        "$(grep -E 'forwardPorts.:' "$DEVCONTAINER_CONFIG" | \
+            sed 's/.*\[//; s/\].*//; s/"//g')"
 }
 
 
-start_container()
+start_proxy()
 {
-    echo TODO: start_container "$@"
+    local host_and_port="$1"
+    echo "$host_and_port"
 }
 
 
-stop_container()
+stop_proxy()
 {
-    echo TODO: stop_container "$@"
+    echo TODO: stop_proxy "$@"
 }
 
 
@@ -48,13 +56,13 @@ set -euo pipefail
 
 case "$COMMAND" in
     down)
-        for HOST_AND_PORT in $(forwarded_ports); do
-            stop_container $HOST_AND_PORT
-        done
+        read_ports_from_config
+        echo "${PORTS[@]}"
         ;;
     up)
-        for HOST_AND_PORT in $(forwarded_ports); do
-            start_container $HOST_AND_PORT
+        read_ports_from_config
+        for PORT in "${PORTS[@]}"; do
+            echo "port: $PORT"
         done
         ;;
     *)
