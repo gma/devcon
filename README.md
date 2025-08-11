@@ -6,9 +6,8 @@ tool.
 
 Why might you want to use it, rather than just using `devcontainer` directly?
 
-If using the `devcontainer` command to build and launch a container that has
-access to my SSH keys, Git config, and my standard dotfiles, I would need all
-these options:
+When using `devcontainer` to run a container that has access to our SSH keys,
+Git config, and dotfiles, we might run it like this:
 
 ```sh
 devcontainer \
@@ -21,10 +20,10 @@ devcontainer \
     up
 ```
 
-Yeah, that's not happening.
+That's a lot of options! Luckily, they're the same every time.
 
-We need a way to automate those settings. `devcon` will take care of preparing
-all those options for you, so you can just type:
+The purpose of `devcon` is to set all those options for you, so you can just
+type:
 
 ```sh
 devcon up
@@ -48,17 +47,21 @@ These extra options will:
 - Install your dotfiles within the container (if you set `DEVCON_DOTFILES` —
   see below)
 
-In addition, it adds two new commands:
+Any options that you pass to the `devcon` commands that wrap a `devcontainer`
+command will be passed through to `devcontainer`. 
+
+`devcon` also provides three new commands:
 
 - `devcon down` will stop your containers, by running `docker compose down`
 - `devcon login` will run `docker exec` to launch a shell inside the container
+- `devcon proxy` lets you start/stop the proxies that make your containers'
+  ports available on your Docker host
 
-To put that another way, to launch, use, and then shut down my development
-environment I can just type this:
+tl;dr — to launch, use, and then shut down a devcontainer, you can just type:
 
 ```sh
 devcon up
-devcon login  # equivalent to `devcon exec /bin/bash`
+devcon login  # runs a shell in the container, i.e. `devcon exec /bin/bash`
 devcon down
 ```
 
