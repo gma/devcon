@@ -140,8 +140,8 @@ case "$COMMAND" in
         devcontainer "$COMMAND" "${BUILD_OPTIONS[@]}" "$@"
         ;;
     down)
-        docker compose -f .devcontainer/compose.yaml down "$@"
         devcon-proxy down
+        docker compose -f .devcontainer/compose.yaml down "$@"
         ;;
     exec)
         devcontainer "$COMMAND" "${EXEC_OPTIONS[@]}" "$@"
