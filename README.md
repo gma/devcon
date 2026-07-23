@@ -107,8 +107,9 @@ Default: Unset
 
 Can be set to the URL of a Git repository that contains your dotfiles. It will
 be passed to the `--dotfiles-repository` argument of `devcontainer up` . I set
-this in my host computer's `~/.bashrc`, so that every time I build a new
-devcontainer my personal settings are installed within the container.
+this variable in my host computer's `~/.bashrc`, so that every time I build a
+new devcontainer my personal settings (stored in [gma/devcontainer-config]) are
+installed within the container.
 
 ### DEVCON_FEATURES
 
@@ -133,5 +134,6 @@ used to determine the user's home directory inside the container.
 
 [devcontainers/cli]: https://github.com/devcontainers/cli
 [devcontainer feature]: https://containers.dev/features
+[gma/devcontainer-config]: https://github.com/gma/devcontainer-config
 [devcontainer features]: https://containers.dev/features
 [apt-packages]: https://github.com/rocker-org/devcontainer-features/tree/main/src/apt-packages
