@@ -133,7 +133,6 @@ If your container runs as a different you'll probably want to update this. It's
 used to determine the user's home directory inside the container.
 
 [devcontainers/cli]: https://github.com/devcontainers/cli
-[devcontainer feature]: https://containers.dev/features
 [gma/devcontainer-config]: https://github.com/gma/devcontainer-config
 [devcontainer features]: https://containers.dev/features
 [apt-packages]: https://github.com/rocker-org/devcontainer-features/tree/main/src/apt-packages
