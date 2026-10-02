@@ -98,7 +98,8 @@ for_each_port()
 
     local container network port project service
 
-    project="$(read_config_property name)"
+    project="$(basename -- "$(pwd)" | \
+        tr -s ' ' '-' | tr '[:upper:]' '[:lower:]')"
     network="${project}_default"
     read_ports_from_config
     for port in "${PORTS[@]}"; do
